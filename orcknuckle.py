@@ -89,7 +89,10 @@ def cross_player_cancellation(players):
                     if rune_counts[player_name]['ghost'] > 0 and rune_counts[opponent_name]['princess'] > 0:
                         if player['type'] == 'human':
                             candidates = [op['name'] for op in players if op['name'] != player_name and rune_counts[op['name']]['princess'] > 0]
-                            target = choose_cancellation_target(player_name, candidates)
+                            if len(candidates) > 1:
+                                target = choose_cancellation_target(player_name, candidates)
+                            else:
+                                target = candidates[0]  # Only one target available
                         else:
                             target = opponent_name  # Simple AI chooses the first match
                         print(f"{player_name}'s ghost cancels out {target}'s princess!")
@@ -101,7 +104,10 @@ def cross_player_cancellation(players):
                     if rune_counts[player_name]['knight'] > 0 and rune_counts[opponent_name]['dragon'] > 0:
                         if player['type'] == 'human':
                             candidates = [op['name'] for op in players if op['name'] != player_name and rune_counts[op['name']]['dragon'] > 0]
-                            target = choose_cancellation_target(player_name, candidates)
+                            if len(candidates) > 1:
+                                target = choose_cancellation_target(player_name, candidates)
+                            else:
+                                target = candidates[0]  # Only one target available
                         else:
                             target = opponent_name  # Simple AI chooses the first match
                         print(f"{player_name}'s knight cancels out {target}'s dragon!")
@@ -119,6 +125,7 @@ def cross_player_cancellation(players):
     rune_counts = {player_name: +runes for player_name, runes in rune_counts.items()}
 
     return rune_counts
+
 
 
 def calculate_score(rune_counts):
