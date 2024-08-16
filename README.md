@@ -35,7 +35,7 @@ To run the game, you'll need Python installed on your machine. Simply clone this
 This project is licensed under the GNU General Public License (GPL) version 2 or later. 
 You can freely modify and redistribute the code under the terms of this license.
 
-OrcKnuckle Game
+OrcKnuckle Python Game
 Copyright (C) 2024 Joel Southall
 
 This program is free software: you can redistribute it and/or modify
