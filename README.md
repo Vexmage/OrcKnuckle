@@ -5,7 +5,7 @@ This project simulates a fantasy gambling game where players roll custom dice (k
 OrcKnuckle is released under the GNU General Public License (GPL), ensuring that it remains free and open source.
 
 ## Game Overview
-OrcKnuckle is a simple yet engaging game where players roll four knuckles—three regular 5-sided dice and one special 6-sided die 
+OrcKnuckle is a simple yet engaging game where players roll four knuckles—three 5-sided dice and one special 6-sided die 
 (the thumb knuckle). The faces of the dice are carved with runes representing different characters and creatures:
 
     - Knuckle Faces: Beholder, Ghost, Princess, Knight, Dragon
