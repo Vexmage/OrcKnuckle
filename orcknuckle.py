@@ -134,7 +134,7 @@ def play_game():
 
         # Ask if players want to play another round
         play_again = input("Do you want to play another round? (yes/no): ").lower()
-        if play_again not in ['yes', 'y']:
+        if play_again not in ['yes', 'y', 'YES', 'Y', 'yeah', 'yup', 'ye', 'yep']:
             break
 
     print("Thanks for playing OrcKnuckle!")
