@@ -32,7 +32,9 @@ def display_orc_warrior():
 
 def display_face_values():
     """Display the worth of each face."""
+    print("************************************")
     print("Welcome to OrcKnuckle!")
+    print("************************************")
     display_orc_warrior() 
     print("Here’s what each face is worth:")
     for rune, value in rune_values.items():
