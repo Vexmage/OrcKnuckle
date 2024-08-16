@@ -12,7 +12,7 @@ rune_values = {
     'princess': 2,
     'knight': 2,
     'dragon': 3,
-    'orc': 0  # Orc cancels everything, so it's worth 0
+    'orc': 0  # Orc cancels everything, so it's worth 0 in the regular game
 }
 
 def display_orc_warrior():
@@ -30,22 +30,57 @@ def display_orc_warrior():
 """
     print(orc_warrior)
 
-def display_face_values():
+def display_face_values(wild_orc_variant):
     """Display the worth of each face."""
     print("************************************")
     print("Welcome to OrcKnuckle!")
     print("************************************")
     display_orc_warrior() 
     print("Here’s what each face is worth:")
-    for rune, value in rune_values.items():
-        print(f"  - {rune.capitalize()}: {value} point{'s' if value != 1 else ''}")
+    print("  - Ghost: 0 points")
+    print("  - Beholder: 1 point")
+    print("  - Princess: 2 points")
+    print("  - Knight: 2 points")
+    print("  - Dragon: 3 points")
+    if wild_orc_variant:
+        print("  - Orc: Wild (can be any face!)")
+    else:
+        print("  - Orc: 0 points (cancels all runes)")
     print()
+
+def choose_orc_value(player_name):
+    """Prompt the player to choose what their Orc will represent."""
+    print(f"{player_name}, you rolled an Orc! Choose what it will represent:")
+    print("1. Ghost")
+    print("2. Beholder")
+    print("3. Princess")
+    print("4. Knight")
+    print("5. Dragon")
+    choice = int(input("Enter the number corresponding to your choice: "))
+    choices = ['ghost', 'beholder', 'princess', 'knight', 'dragon']
+    return choices[choice - 1]
 
 def roll_knuckles():
     """Simulate rolling the four knuckles."""
     rolls = [(random.choice(knuckle_faces), 'knuckle') for _ in range(3)]  # Roll the first three knuckles
     rolls.append((random.choice(thumb_faces), 'thumb knuckle'))  # Roll the thumb (fourth knuckle)
     return rolls
+
+def apply_wild_orc(players):
+    """Allow human players to choose what their Orc represents, and assign a random face for computer players."""
+    for player in players:
+        roll = player['roll']
+        for i, (rune, knuckle_type) in enumerate(roll):
+            if rune == 'orc':
+                if player['type'] == 'human':
+                    new_rune = choose_orc_value(player['name'])
+                else:
+                    # Randomly assign a face for computer players
+                    new_rune = random.choice(['ghost', 'beholder', 'princess', 'knight', 'dragon'])
+                    print(f"{player['name']}'s Orc is randomly declared as a {new_rune.capitalize()}!")
+                roll[i] = (new_rune, knuckle_type)
+                print(f"{player['name']} has declared their Orc as a {new_rune.capitalize()}!")
+
 
 def display_roll(player, roll):
     """Display the roll with details."""
@@ -145,7 +180,10 @@ def determine_winner(scores):
 
 def play_game():
     """Main game loop."""
-    display_face_values()  # Display face values at the beginning of the game
+    variant = input("Do you want to play the Wild Orc variant? (yes/no): ").lower()
+    wild_orc_variant = variant in ['yes', 'y']
+
+    display_face_values(wild_orc_variant)  # Pass the variant flag to display face values correctly
 
     # Get number of players
     num_players = int(input("Enter the number of players: "))
@@ -166,6 +204,10 @@ def play_game():
         # Display the rolls
         for player in players:
             display_roll(player['name'], player['roll'])
+
+        # Apply Wild Orc variant if selected
+        if wild_orc_variant:
+            apply_wild_orc(players)
 
         # Apply cross-player cancellation
         final_runes = cross_player_cancellation(players)
