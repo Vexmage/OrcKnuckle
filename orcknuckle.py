@@ -15,6 +15,13 @@ rune_values = {
     'orc': 0  # Orc cancels everything, so it's worth 0
 }
 
+def display_face_values():
+    """Display the worth of each face."""
+    print("Welcome to OrcKnuckle!")
+    print("Here’s what each face is worth:")
+    for rune, value in rune_values.items():
+        print(f"  - {rune.capitalize()}: {value} point{'s' if value != 1 else ''}")
+
 def roll_knuckles():
     """Simulate rolling the four knuckles."""
     rolls = [(random.choice(knuckle_faces), 'knuckle') for _ in range(3)]  # Roll the first three knuckles
@@ -88,19 +95,22 @@ def calculate_score(rune_counts):
     score = sum(rune_values[rune] * count for rune, count in rune_counts.items())
     return score
 
-# Preliminary testing with cross-player cancellation and scoring
-players = {
-    "Player 1": roll_knuckles(),
-    "Player 2": roll_knuckles()
-}
+# Main game execution
+if __name__ == "__main__":
+    display_face_values()  # Display face values at the beginning of the game
+    
+    players = {
+        "Player 1": roll_knuckles(),
+        "Player 2": roll_knuckles()
+    }
 
-for player, roll in players.items():
-    display_roll(player, roll)
+    for player, roll in players.items():
+        display_roll(player, roll)
 
-# Apply cross-player cancellation
-final_runes = cross_player_cancellation(players)
+    # Apply cross-player cancellation
+    final_runes = cross_player_cancellation(players)
 
-# Display results after cancellation and calculate scores
-for player, runes in final_runes.items():
-    score = calculate_score(runes)
-    print(f"After cancellation, {player} has: {runes}, with a score of {score}\n")
+    # Display results after cancellation and calculate scores
+    for player, runes in final_runes.items():
+        score = calculate_score(runes)
+        print(f"After cancellation, {player} has: {runes}, with a score of {score}\n")
