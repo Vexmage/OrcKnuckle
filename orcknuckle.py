@@ -82,6 +82,16 @@ def calculate_score(rune_counts):
     score = sum(rune_values[rune] * count for rune, count in rune_counts.items())
     return score
 
+def determine_winner(scores):
+    """Determine the winner based on the scores."""
+    max_score = max(scores.values())
+    winners = [player for player, score in scores.items() if score == max_score]
+    
+    if len(winners) == 1:
+        return winners[0], max_score
+    else:
+        return None, max_score
+
 def play_game():
     """Main game loop."""
     display_face_values()  # Display face values at the beginning of the game
@@ -108,10 +118,19 @@ def play_game():
         # Apply cross-player cancellation
         final_runes = cross_player_cancellation(players)
 
-        # Display results after cancellation and calculate scores
-        for player, runes in final_runes.items():
-            score = calculate_score(runes)
-            print(f"After cancellation, {player} has: {runes}, with a score of {score}\n")
+        # Calculate scores and determine the winner
+        scores = {player: calculate_score(runes) for player, runes in final_runes.items()}
+        
+        # Display results after cancellation
+        for player, score in scores.items():
+            print(f"After cancellation, {player} has a score of {score}")
+        
+        winner, max_score = determine_winner(scores)
+        
+        if winner:
+            print(f"{winner} wins the round with a score of {max_score}!\n")
+        else:
+            print("There is no clear winner this round, save your bets for the next!\n")
 
         # Ask if players want to play another round
         play_again = input("Do you want to play another round? (yes/no): ").lower()
