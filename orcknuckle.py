@@ -53,47 +53,73 @@ def display_roll(player, roll):
     for rune, knuckle_type in roll:
         print(f"  - {knuckle_type.capitalize()} shows a {rune.capitalize()}")
 
+def choose_cancellation_target(human_player, candidates):
+    """Prompt the human player to choose which opponent's face to cancel."""
+    print(f"{human_player}, you have multiple targets to cancel. Choose a target:")
+    for i, candidate in enumerate(candidates):
+        print(f"{i + 1}. {candidate}")
+    choice = int(input(f"Enter the number of the target you want to cancel: ")) - 1
+    return candidates[choice]
+
 def cross_player_cancellation(players):
     """Apply cross-player cancellation rules between all players."""
-    rune_counts = {player: Counter([rune for rune, _ in roll]) for player, roll in players.items()}
-    
+    rune_counts = {player['name']: Counter([rune for rune, _ in player['roll']]) for player in players}
+
     # Check for orcs across all players
-    orc_players = [player for player, runes in rune_counts.items() if 'orc' in runes]
+    orc_players = [player['name'] for player in players if 'orc' in rune_counts[player['name']]]
     if len(orc_players) > 0:
         if len(orc_players) == len(players):
             print("All players rolled an orc! All runes are canceled for all players.")
-            return {player: Counter() for player in players}
+            return {player['name']: Counter() for player in players}
         else:
-            for player in orc_players:
-                print(f"{player}'s orc cancels all their runes!")
-                rune_counts[player] = Counter({'orc': 1})
+            for player_name in orc_players:
+                print(f"{player_name}'s orc cancels all their runes!")
+                rune_counts[player_name] = Counter({'orc': 1})
 
     # Apply cross-player cancellations iteratively
     while True:
         made_cancellation = False
-        
-        for p1 in players:
-            for p2 in players:
-                if p1 != p2:
-                    if rune_counts[p1]['ghost'] > 0 and rune_counts[p2]['princess'] > 0:
-                        print(f"{p1}'s ghost cancels out {p2}'s princess!")
-                        rune_counts[p1]['ghost'] -= 1
-                        rune_counts[p2]['princess'] -= 1
+
+        for player in players:
+            player_name = player['name']
+            for opponent in players:
+                opponent_name = opponent['name']
+                if player_name != opponent_name:
+                    # Handle Ghost vs. Princess
+                    if rune_counts[player_name]['ghost'] > 0 and rune_counts[opponent_name]['princess'] > 0:
+                        if player['type'] == 'human':
+                            candidates = [op['name'] for op in players if op['name'] != player_name and rune_counts[op['name']]['princess'] > 0]
+                            target = choose_cancellation_target(player_name, candidates)
+                        else:
+                            target = opponent_name  # Simple AI chooses the first match
+                        print(f"{player_name}'s ghost cancels out {target}'s princess!")
+                        rune_counts[player_name]['ghost'] -= 1
+                        rune_counts[target]['princess'] -= 1
                         made_cancellation = True
-                        
-                    if rune_counts[p1]['knight'] > 0 and rune_counts[p2]['dragon'] > 0:
-                        print(f"{p1}'s knight cancels out {p2}'s dragon!")
-                        rune_counts[p1]['knight'] -= 1
-                        rune_counts[p2]['dragon'] -= 1
+
+                    # Handle Knight vs. Dragon
+                    if rune_counts[player_name]['knight'] > 0 and rune_counts[opponent_name]['dragon'] > 0:
+                        if player['type'] == 'human':
+                            candidates = [op['name'] for op in players if op['name'] != player_name and rune_counts[op['name']]['dragon'] > 0]
+                            target = choose_cancellation_target(player_name, candidates)
+                        else:
+                            target = opponent_name  # Simple AI chooses the first match
+                        print(f"{player_name}'s knight cancels out {target}'s dragon!")
+                        rune_counts[player_name]['knight'] -= 1
+                        rune_counts[target]['dragon'] -= 1
                         made_cancellation = True
-        
+
+                        # Prevent double cancellation by breaking out after one knight cancels one dragon
+                        break
+
         if not made_cancellation:
             break
-    
+
     # Remove canceled runes
-    rune_counts = {player: +runes for player, runes in rune_counts.items()}
-    
+    rune_counts = {player_name: +runes for player_name, runes in rune_counts.items()}
+
     return rune_counts
+
 
 def calculate_score(rune_counts):
     """Calculate the total score based on remaining runes."""
@@ -104,7 +130,7 @@ def determine_winner(scores):
     """Determine the winner based on the scores."""
     max_score = max(scores.values())
     winners = [player for player, score in scores.items() if score == max_score]
-    
+
     if len(winners) == 1:
         return winners[0], max_score
     else:
@@ -113,38 +139,39 @@ def determine_winner(scores):
 def play_game():
     """Main game loop."""
     display_face_values()  # Display face values at the beginning of the game
-    
+
     # Get number of players
     num_players = int(input("Enter the number of players: "))
-    players = {}
+    players = []
 
-    # Get player names
+    # Get player names and types
     for i in range(1, num_players + 1):
         name = input(f"Enter the name of Player {i}: ")
-        players[name] = None
+        player_type = input(f"Is {name} a human or computer player? (human/computer): ").lower()
+        players.append({'name': name, 'type': player_type})
 
     # Play rounds until players decide to stop
     while True:
         # Each player rolls the knuckles
         for player in players:
-            players[player] = roll_knuckles()
+            player['roll'] = roll_knuckles()
 
         # Display the rolls
-        for player, roll in players.items():
-            display_roll(player, roll)
+        for player in players:
+            display_roll(player['name'], player['roll'])
 
         # Apply cross-player cancellation
         final_runes = cross_player_cancellation(players)
 
         # Calculate scores and determine the winner
-        scores = {player: calculate_score(runes) for player, runes in final_runes.items()}
-        
+        scores = {player['name']: calculate_score(runes) for player, runes in zip(players, final_runes.values())}
+
         # Display results after cancellation
         for player, score in scores.items():
             print(f"After cancellation, {player} has a score of {score}")
-        
+
         winner, max_score = determine_winner(scores)
-        
+
         if winner:
             print(f"{winner} wins the round with a score of {max_score}!\n")
         else:
@@ -152,7 +179,7 @@ def play_game():
 
         # Ask if players want to play another round
         play_again = input("Do you want to play another round? (yes/no): ").lower()
-        if play_again not in ['yes', 'y', 'YES', 'Y', 'yeah', 'yup', 'ye', 'yep']:
+        if play_again not in ['yes', 'y']:
             break
 
     print("Thanks for playing OrcKnuckle!")
