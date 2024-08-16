@@ -26,9 +26,9 @@ The player with the highest score after rolling wins the round. If there is a ti
 
 To run the game, you'll need Python installed on your machine. Simply clone this repository and run the Python script:
 
-git clone https://github.com/Vexmage/OrcKnuckle.git
-cd OrcKnuckle
-python orcknuckle.py
+- git clone https://github.com/Vexmage/OrcKnuckle.git
+- cd OrcKnuckle
+- python orcknuckle.py
 
 ## License
 
