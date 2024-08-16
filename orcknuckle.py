@@ -15,9 +15,25 @@ rune_values = {
     'orc': 0  # Orc cancels everything, so it's worth 0
 }
 
+def display_orc_warrior():
+    """Display an ASCII art of an orc warrior holding a raised club."""
+    orc_warrior = r"""
+        __,='`````'=/__
+       '//  (o) \(o) \ `'         _,-,
+       //|     ,_)   (`\      ,-'`_,-\
+     ,-~~~\  `'==='  /-,      \==```` \__
+    /        `----'     `\     \       \/
+ /`,-'                 ,   `\_,,')       \ \
+/` /`              ,  , \   / \   \   \   \ \
+/  /    ,        ,    \ \ /  `\   \  \    \ \
+
+"""
+    print(orc_warrior)
+
 def display_face_values():
     """Display the worth of each face."""
     print("Welcome to OrcKnuckle!")
+    display_orc_warrior() 
     print("Here’s what each face is worth:")
     for rune, value in rune_values.items():
         print(f"  - {rune.capitalize()}: {value} point{'s' if value != 1 else ''}")
