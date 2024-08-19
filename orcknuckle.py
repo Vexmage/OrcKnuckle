@@ -48,6 +48,45 @@ def display_face_values(wild_orc_variant):
         print("  - Orc: 0 points (cancels all runes)")
     print()
 
+def display_instructions():
+    """Display the game instructions."""
+    instructions = """
+Welcome to OrcKnuckle!
+
+In this game, players roll four knuckle-bone dice to score points. The faces of the dice are carved with the following runes:
+  - Ghost
+  - Beholder
+  - Princess
+  - Knight
+  - Dragon
+  - Orc (on the thumb knuckle only)
+
+Scoring:
+  - Ghost: 0 points
+  - Beholder: 1 point
+  - Princess: 2 points
+  - Knight: 2 points
+  - Dragon: 3 points
+  - Orc: In the regular game, the Orc cancels all runes and is worth 0 points. In the Wild Orc variant, the Orc is wild and can be declared as any face by the player.
+
+Gameplay:
+  1. Each player rolls their knuckles.
+  2. If playing the Wild Orc variant, players with an Orc can choose what face it represents.
+  3. The game automatically applies cancellations:
+      - A Ghost cancels out a Princess.
+      - A Knight cancels out a Dragon.
+      - The Orc cancels all runes for that player in the regular game.
+  4. The player with the highest score after cancellations wins the round.
+  5. If there is no clear winner, the round is a draw, and the bets carry over to the next round.
+
+Winning:
+  - The player with the highest score after all rounds wins the game.
+  - In case of a tie, the game continues until there is a clear winner.
+
+Enjoy the game and may the best player win!
+    """
+    print(instructions)
+
 def choose_orc_value(player_name):
     """Prompt the player to choose what their Orc will represent."""
     print(f"{player_name}, you rolled an Orc! Choose what it will represent:")
@@ -80,7 +119,6 @@ def apply_wild_orc(players):
                     print(f"{player['name']}'s Orc is randomly declared as a {new_rune.capitalize()}!")
                 roll[i] = (new_rune, knuckle_type)
                 print(f"{player['name']} has declared their Orc as a {new_rune.capitalize()}!")
-
 
 def display_roll(player, roll):
     """Display the roll with details."""
@@ -161,8 +199,6 @@ def cross_player_cancellation(players):
 
     return rune_counts
 
-
-
 def calculate_score(rune_counts):
     """Calculate the total score based on remaining runes."""
     score = sum(rune_values[rune] * count for rune, count in rune_counts.items())
@@ -182,6 +218,11 @@ def play_game():
     """Main game loop."""
     variant = input("Do you want to play the Wild Orc variant? (yes/no): ").lower()
     wild_orc_variant = variant in ['yes', 'y']
+
+    # Ask if the player wants to see the instructions
+    show_instructions = input("Do you want to see the instructions? (yes/no): ").lower()
+    if show_instructions in ['yes', 'y']:
+        display_instructions()
 
     display_face_values(wild_orc_variant)  # Pass the variant flag to display face values correctly
 
