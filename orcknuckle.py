@@ -249,14 +249,11 @@ def play_game():
 
     # Play rounds until players decide to stop
     while True:
-        # Each player rolls the knuckles
+        # Each player rolls the knuckles and displays the roll
         for player in players:
             print(f"{player['name']} is rolling the knuckles...")
             player['roll'] = roll_knuckles()
-
-        # Display the rolls
-        for player in players:
-            display_roll(player['name'], player['roll'])
+            display_roll(player['name'], player['roll'])  # Immediately display the roll after it's determined
 
         # Apply Wild Orc variant if selected
         if wild_orc_variant:
