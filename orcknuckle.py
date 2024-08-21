@@ -1,4 +1,5 @@
 import random
+import time
 from collections import Counter
 
 # Define the faces of the dice (knuckles)
@@ -101,6 +102,7 @@ def choose_orc_value(player_name):
 
 def roll_knuckles():
     """Simulate rolling the four knuckles."""
+    time.sleep(2)  # Add a delay to make the game more interactive
     rolls = [(random.choice(knuckle_faces), 'knuckle') for _ in range(3)]  # Roll the first three knuckles
     rolls.append((random.choice(thumb_faces), 'thumb knuckle'))  # Roll the thumb (fourth knuckle)
     return rolls
@@ -128,11 +130,19 @@ def display_roll(player, roll):
 
 def choose_cancellation_target(human_player, candidates):
     """Prompt the human player to choose which opponent's face to cancel."""
-    print(f"{human_player}, you have multiple targets to cancel. Choose a target:")
-    for i, candidate in enumerate(candidates):
-        print(f"{i + 1}. {candidate}")
-    choice = int(input(f"Enter the number of the target you want to cancel: ")) - 1
-    return candidates[choice]
+    while True:
+        try:
+            print(f"{human_player}, you have multiple targets to cancel. Choose a target:")
+            for i, candidate in enumerate(candidates):
+                print(f"{i + 1}. {candidate}")
+            choice = int(input(f"Enter the number of the target you want to cancel: ")) - 1
+            if 0 <= choice < len(candidates):
+                return candidates[choice]
+            else:
+                print("Invalid choice. Please enter a number corresponding to the listed targets.")
+        except ValueError:
+            print("Invalid input. Please enter a valid number.")
+
 
 def cross_player_cancellation(players):
     """Apply cross-player cancellation rules between all players."""
@@ -234,12 +244,14 @@ def play_game():
     for i in range(1, num_players + 1):
         name = input(f"Enter the name of Player {i}: ")
         player_type = input(f"Is {name} a human or computer player? (human/computer): ").lower()
-        players.append({'name': name, 'type': player_type})
+        name_with_type = f"{name} ({player_type})"  # Append (human) or (computer) to the player's name
+        players.append({'name': name_with_type, 'type': player_type})
 
     # Play rounds until players decide to stop
     while True:
         # Each player rolls the knuckles
         for player in players:
+            print(f"{player['name']} is rolling the knuckles...")
             player['roll'] = roll_knuckles()
 
         # Display the rolls
