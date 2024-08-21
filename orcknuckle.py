@@ -252,6 +252,8 @@ def play_game():
         # Each player rolls the knuckles and displays the roll
         for player in players:
             print(f"{player['name']} is rolling the knuckles...")
+            if player['type'] == 'human':
+                input("Press Enter to roll the knuckles...")
             player['roll'] = roll_knuckles()
             display_roll(player['name'], player['roll'])  # Immediately display the roll after it's determined
 
