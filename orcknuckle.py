@@ -1,290 +1,88 @@
 import random
-import time
 from collections import Counter
 
-# Define the faces of the dice (knuckles)
-knuckle_faces = ['beholder', 'ghost', 'princess', 'knight', 'dragon']
-thumb_faces = ['beholder', 'ghost', 'princess', 'knight', 'dragon', 'orc']
+# Dice class responsible for rolling
+class Dice:
+    def __init__(self):
+        self.knuckle_faces = ['beholder', 'ghost', 'princess', 'knight', 'dragon']
+        self.thumb_faces = self.knuckle_faces + ['orc']
 
-# Define the value of each rune
-rune_values = {
-    'ghost': 0,
-    'beholder': 1,
-    'princess': 2,
-    'knight': 2,
-    'dragon': 3,
-    'orc': 0  # Orc cancels everything, so it's worth 0 in the regular game
-}
-
-def display_orc_warrior():
-    """Display an ASCII art of an orc warrior holding a raised club."""
-    orc_warrior = r"""
-        __,='`````'=/__
-       '//  (o) \(o) \ `'         _,-,
-       //|     ,_)   (`\      ,-'`_,-\
-     ,-~~~\  `'==='  /-,      \==```` \__
-    /        `----'     `\     \       \/
- /`,-'                 ,   `\_,,')       \ \
-/` /`              ,  , \   / \   \   \   \ \
-/  /    ,        ,    \ \ /  `\   \  \    \ \
-
-"""
-    print(orc_warrior)
-
-def display_face_values(wild_orc_variant):
-    """Display the worth of each face."""
-    print("************************************")
-    print("Welcome to OrcKnuckle!")
-    print("************************************")
-    display_orc_warrior() 
-    print("Here’s what each face is worth:")
-    print("  - Ghost: 0 points")
-    print("  - Beholder: 1 point")
-    print("  - Princess: 2 points")
-    print("  - Knight: 2 points")
-    print("  - Dragon: 3 points")
-    if wild_orc_variant:
-        print("  - Orc: Wild (can be any face!)")
-    else:
-        print("  - Orc: 0 points (cancels all runes)")
-    print()
-
-def display_instructions():
-    """Display the game instructions."""
-    instructions = """
-Welcome to OrcKnuckle!
-
-In this game, players roll four knuckle-bone dice to score points. The faces of the dice are carved with the following runes:
-  - Ghost
-  - Beholder
-  - Princess
-  - Knight
-  - Dragon
-  - Orc (on the thumb knuckle only)
-
-Scoring:
-  - Ghost: 0 points
-  - Beholder: 1 point
-  - Princess: 2 points
-  - Knight: 2 points
-  - Dragon: 3 points
-  - Orc: In the regular game, the Orc cancels all runes and is worth 0 points. In the Wild Orc variant, the Orc is wild and can be declared as any face by the player.
-
-Gameplay:
-  1. Each player rolls their knuckles.
-  2. If playing the Wild Orc variant, players with an Orc can choose what face it represents.
-  3. The game automatically applies cancellations:
-      - A Ghost cancels out a Princess.
-      - A Knight cancels out a Dragon.
-      - The Orc cancels all runes for that player in the regular game.
-  4. The player with the highest score after cancellations wins the round.
-  5. If there is no clear winner, the round is a draw, and the bets carry over to the next round.
-
-Winning:
-  - The player with the highest score after all rounds wins the game.
-  - In case of a tie, the game continues until there is a clear winner.
-
-Enjoy the game and may the best player win!
-    """
-    print(instructions)
-
-def choose_orc_value(player_name):
-    """Prompt the player to choose what their Orc will represent."""
-    print(f"{player_name}, you rolled an Orc! Choose what it will represent:")
-    print("1. Ghost")
-    print("2. Beholder")
-    print("3. Princess")
-    print("4. Knight")
-    print("5. Dragon")
-    choice = int(input("Enter the number corresponding to your choice: "))
-    choices = ['ghost', 'beholder', 'princess', 'knight', 'dragon']
-    return choices[choice - 1]
-
-def roll_knuckles():
-    """Simulate rolling the four knuckles."""
-    time.sleep(2)  # Add a delay to make the game more interactive
-    rolls = [(random.choice(knuckle_faces), 'knuckle') for _ in range(3)]  # Roll the first three knuckles
-    rolls.append((random.choice(thumb_faces), 'thumb knuckle'))  # Roll the thumb (fourth knuckle)
-    return rolls
-
-def apply_wild_orc(players):
-    """Allow human players to choose what their Orc represents, and assign a random face for computer players."""
-    for player in players:
-        roll = player['roll']
-        for i, (rune, knuckle_type) in enumerate(roll):
-            if rune == 'orc':
-                if player['type'] == 'human':
-                    new_rune = choose_orc_value(player['name'])
-                else:
-                    # Randomly assign a face for computer players
-                    new_rune = random.choice(['ghost', 'beholder', 'princess', 'knight', 'dragon'])
-                    print(f"{player['name']}'s Orc is randomly declared as a {new_rune.capitalize()}!")
-                roll[i] = (new_rune, knuckle_type)
-                print(f"{player['name']} has declared their Orc as a {new_rune.capitalize()}!")
-
-def display_roll(player, roll):
-    """Display the roll with details."""
-    print(f"{player} rolled:")
-    for rune, knuckle_type in roll:
-        print(f"  - {knuckle_type.capitalize()} shows a {rune.capitalize()}")
-
-def choose_cancellation_target(human_player, candidates):
-    """Prompt the human player to choose which opponent's face to cancel."""
-    while True:
-        try:
-            print(f"{human_player}, you have multiple targets to cancel. Choose a target:")
-            for i, candidate in enumerate(candidates):
-                print(f"{i + 1}. {candidate}")
-            choice = int(input(f"Enter the number of the target you want to cancel: ")) - 1
-            if 0 <= choice < len(candidates):
-                return candidates[choice]
-            else:
-                print("Invalid choice. Please enter a number corresponding to the listed targets.")
-        except ValueError:
-            print("Invalid input. Please enter a valid number.")
+    def roll(self):
+        """Simulate rolling the four knuckles."""
+        rolls = [(random.choice(self.knuckle_faces), 'knuckle') for _ in range(3)]
+        rolls.append((random.choice(self.thumb_faces), 'thumb knuckle'))
+        return rolls
 
 
-def cross_player_cancellation(players):
-    """Apply cross-player cancellation rules between all players."""
-    rune_counts = {player['name']: Counter([rune for rune, _ in player['roll']]) for player in players}
+# Player class
+class Player:
+    def __init__(self, name):
+        self.name = name
+        self.rolls = []
 
-    # Check for orcs across all players
-    orc_players = [player['name'] for player in players if 'orc' in rune_counts[player['name']]]
-    if len(orc_players) > 0:
-        if len(orc_players) == len(players):
-            print("All players rolled an orc! All runes are canceled for all players.")
-            return {player['name']: Counter() for player in players}
+    def roll_knuckles(self, dice):
+        """Each player rolls their dice."""
+        self.rolls = dice.roll()
+
+    def display_roll(self):
+        print(f"{self.name} rolled:")
+        for rune, knuckle_type in self.rolls:
+            print(f"  - {knuckle_type.capitalize()} shows a {rune.capitalize()}")
+
+
+# Human player subclass
+class HumanPlayer(Player):
+    def __init__(self, name):
+        super().__init__(name)
+
+    def roll_knuckles(self, dice):
+        """Human player must press a key to roll."""
+        input(f"{self.name}, press any key to roll the knuckles...")
+        super().roll_knuckles(dice)
+
+
+# Computer player subclass
+class ComputerPlayer(Player):
+    def __init__(self, name):
+        super().__init__(name)
+
+    def roll_knuckles(self, dice):
+        """Computer players roll without a prompt."""
+        print(f"{self.name} is rolling the knuckles...")
+        super().roll_knuckles(dice)
+
+
+# Game class that runs the main game loop
+class Game:
+    def __init__(self):
+        self.players = []
+        self.dice = Dice()
+
+    def add_player(self, name, player_type):
+        """Add players to the game (human or computer)."""
+        if player_type == "human":
+            self.players.append(HumanPlayer(name))
         else:
-            for player_name in orc_players:
-                print(f"{player_name}'s orc cancels all their runes!")
-                rune_counts[player_name] = Counter({'orc': 1})
+            self.players.append(ComputerPlayer(name))
 
-    # Apply cross-player cancellations iteratively
-    while True:
-        made_cancellation = False
+    def play_round(self):
+        """Play one round of the game where each player rolls."""
+        for player in self.players:
+            player.roll_knuckles(self.dice)
+            player.display_roll()
 
-        for player in players:
-            player_name = player['name']
-            for opponent in players:
-                opponent_name = opponent['name']
-                if player_name != opponent_name:
-                    # Handle Ghost vs. Princess
-                    if rune_counts[player_name]['ghost'] > 0 and rune_counts[opponent_name]['princess'] > 0:
-                        if player['type'] == 'human':
-                            candidates = [op['name'] for op in players if op['name'] != player_name and rune_counts[op['name']]['princess'] > 0]
-                            if len(candidates) > 1:
-                                target = choose_cancellation_target(player_name, candidates)
-                            else:
-                                target = candidates[0]  # Only one target available
-                        else:
-                            target = opponent_name  # Simple AI chooses the first match
-                        print(f"{player_name}'s ghost cancels out {target}'s princess!")
-                        rune_counts[player_name]['ghost'] -= 1
-                        rune_counts[target]['princess'] -= 1
-                        made_cancellation = True
+    def start(self):
+        """Start the game, set up players, and manage rounds."""
+        # Example: Add players
+        self.add_player("Sam", "human")
+        self.add_player("Rex", "computer")
+        self.add_player("Hal", "computer")
 
-                    # Handle Knight vs. Dragon
-                    if rune_counts[player_name]['knight'] > 0 and rune_counts[opponent_name]['dragon'] > 0:
-                        if player['type'] == 'human':
-                            candidates = [op['name'] for op in players if op['name'] != player_name and rune_counts[op['name']]['dragon'] > 0]
-                            if len(candidates) > 1:
-                                target = choose_cancellation_target(player_name, candidates)
-                            else:
-                                target = candidates[0]  # Only one target available
-                        else:
-                            target = opponent_name  # Simple AI chooses the first match
-                        print(f"{player_name}'s knight cancels out {target}'s dragon!")
-                        rune_counts[player_name]['knight'] -= 1
-                        rune_counts[target]['dragon'] -= 1
-                        made_cancellation = True
+        # Play a single round for now
+        self.play_round()
 
-                        # Prevent double cancellation by breaking out after one knight cancels one dragon
-                        break
 
-        if not made_cancellation:
-            break
-
-    # Remove canceled runes
-    rune_counts = {player_name: +runes for player_name, runes in rune_counts.items()}
-
-    return rune_counts
-
-def calculate_score(rune_counts):
-    """Calculate the total score based on remaining runes."""
-    score = sum(rune_values[rune] * count for rune, count in rune_counts.items())
-    return score
-
-def determine_winner(scores):
-    """Determine the winner based on the scores."""
-    max_score = max(scores.values())
-    winners = [player for player, score in scores.items() if score == max_score]
-
-    if len(winners) == 1:
-        return winners[0], max_score
-    else:
-        return None, max_score
-
-def play_game():
-    """Main game loop."""
-    variant = input("Do you want to play the Wild Orc variant? (yes/no): ").lower()
-    wild_orc_variant = variant in ['yes', 'y']
-
-    # Ask if the player wants to see the instructions
-    show_instructions = input("Do you want to see the instructions? (yes/no): ").lower()
-    if show_instructions in ['yes', 'y']:
-        display_instructions()
-
-    display_face_values(wild_orc_variant)  # Pass the variant flag to display face values correctly
-
-    # Get number of players
-    num_players = int(input("Enter the number of players: "))
-    players = []
-
-    # Get player names and types
-    for i in range(1, num_players + 1):
-        name = input(f"Enter the name of Player {i}: ")
-        player_type = input(f"Is {name} a human or computer player? (human/computer): ").lower()
-        name_with_type = f"{name} ({player_type})"  # Append (human) or (computer) to the player's name
-        players.append({'name': name_with_type, 'type': player_type})
-
-    # Play rounds until players decide to stop
-    while True:
-        # Each player rolls the knuckles and displays the roll
-        for player in players:
-            print(f"{player['name']} is rolling the knuckles...")
-            if player['type'] == 'human':
-                input("Press Enter to roll the knuckles...")
-            player['roll'] = roll_knuckles()
-            display_roll(player['name'], player['roll'])  # Immediately display the roll after it's determined
-
-        # Apply Wild Orc variant if selected
-        if wild_orc_variant:
-            apply_wild_orc(players)
-
-        # Apply cross-player cancellation
-        final_runes = cross_player_cancellation(players)
-
-        # Calculate scores and determine the winner
-        scores = {player['name']: calculate_score(runes) for player, runes in zip(players, final_runes.values())}
-
-        # Display results after cancellation
-        for player, score in scores.items():
-            print(f"After cancellation, {player} has a score of {score}")
-
-        winner, max_score = determine_winner(scores)
-
-        if winner:
-            print(f"{winner} wins the round with a score of {max_score}!\n")
-        else:
-            print("There is no clear winner this round, save your bets for the next!\n")
-
-        # Ask if players want to play another round
-        play_again = input("Do you want to play another round? (yes/no): ").lower()
-        if play_again not in ['yes', 'y']:
-            break
-
-    print("Thanks for playing OrcKnuckle!")
-
-# Start the game
+# Example game setup and start
 if __name__ == "__main__":
-    play_game()
+    game = Game()
+    game.start()
