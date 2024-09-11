@@ -1,4 +1,5 @@
 import random
+import time  # Import the time module to add delay
 from collections import Counter
 
 # Dice class responsible for rolling
@@ -107,6 +108,7 @@ class ComputerPlayer(Player):
         """Computer players roll without a prompt."""
         print(f"{self.name} is rolling the knuckles...")
         super().roll_knuckles(dice)
+        time.sleep(2)  # Add delay after computer players roll
 
     def handle_wild_orc(self):
         """Handle the Wild Orc variant for computer players."""
@@ -138,6 +140,7 @@ class Game:
         """Play one round of the game where each player rolls."""
         for player in self.players:
             player.roll_knuckles(self.dice)
+            time.sleep(1)  # Add suspense delay between rolls
             player.display_roll()
 
         # Apply cancellations
